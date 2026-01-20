@@ -1,21 +1,7 @@
 const { app, BrowserWindow } = require("electron")
 const path = require("path")
-const { spawn } = require("child_process")
 
 let mainWindow
-let nextProcess
-
-function startNextServer() {
-  const serverPath = path.join(
-    __dirname,
-    "../.next/standalone/server.js"
-  )
-
-  nextProcess = spawn("node", [serverPath], {
-    cwd: path.join(__dirname, "../.next/standalone"),
-    stdio: "inherit",
-  })
-}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -26,15 +12,15 @@ function createWindow() {
     },
   })
 
-  mainWindow.loadURL("http://localhost:3000")
+  mainWindow.loadFile(
+    path.join(__dirname, "../out/index.html")
+  )
 }
 
-app.whenReady().then(() => {
-  startNextServer()
-  createWindow()
-})
+app.whenReady().then(createWindow)
 
 app.on("window-all-closed", () => {
-  if (nextProcess) nextProcess.kill()
-  app.quit()
+  if (process.platform !== "darwin") {
+    app.quit()
+  }
 })
