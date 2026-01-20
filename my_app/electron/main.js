@@ -36,12 +36,28 @@ function createWindow() {
   mainWindow.loadURL("http://localhost:3000")
 }
 
+const net = require("net")
+
+function waitForServer(port, cb) {
+  const socket = new net.Socket()
+  socket.setTimeout(1000)
+
+  socket.on("connect", () => {
+    socket.destroy()
+    cb()
+  })
+
+  socket.on("error", () => setTimeout(() => waitForServer(port, cb), 500))
+  socket.on("timeout", () => setTimeout(() => waitForServer(port, cb), 500))
+
+  socket.connect(port, "127.0.0.1")
+}
+
 app.whenReady().then(() => {
   startNextServer()
-
-  // give Next.js a moment to boot
-  setTimeout(createWindow, 1500)
+  waitForServer(3000, createWindow)
 })
+
 
 app.on("window-all-closed", () => {
   if (nextProcess) nextProcess.kill()
