@@ -1,18 +1,25 @@
 const { app, BrowserWindow } = require("electron")
 const path = require("path")
-const { spawn } = require("child_process")
+const { fork } = require("child_process")
 
 let mainWindow
 let nextProcess
 
 function startNextServer() {
   const serverPath = path.join(
-    __dirname,
-    "../.next/standalone/server.js"
+    process.resourcesPath,
+    "app.asar.unpacked",
+    ".next",
+    "standalone",
+    "server.js"
   )
 
-  nextProcess = spawn("node", [serverPath], {
-    cwd: path.join(__dirname, "../.next/standalone"),
+  nextProcess = fork(serverPath, [], {
+    env: {
+      ...process.env,
+      NODE_ENV: "production",
+      PORT: "3000",
+    },
     stdio: "inherit",
   })
 }
@@ -31,7 +38,9 @@ function createWindow() {
 
 app.whenReady().then(() => {
   startNextServer()
-  createWindow()
+
+  // give Next.js a moment to boot
+  setTimeout(createWindow, 1500)
 })
 
 app.on("window-all-closed", () => {
