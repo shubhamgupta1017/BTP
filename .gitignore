@@ -1,0 +1,33 @@
+/cvat
+__pycache__/
+**/__pycache__/
+**/__pycache__/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+**.pyc
+server/__pycache__/
+server/models
+
+# C extensions
+*.so
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+.env
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+server/temp.md
+server/models
