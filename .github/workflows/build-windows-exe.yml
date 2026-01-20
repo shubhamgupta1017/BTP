@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write  
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -33,8 +36,14 @@ jobs:
       - name: Build Electron EXE
         run: npm run electron:build
 
-      - name: Upload EXE artifact
-        uses: actions/upload-artifact@v4
+      - name: Normalize EXE name
+        run: |
+          Rename-Item dist\*.exe Intelliclinix-Setup.exe
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Intelliclinix-Frontend-${{ github.ref_name }}
-          path: my_app/dist/*.exe
+          files: my_app/dist/Intelliclinix-Setup.exe
+          name: IntelliClinix ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
